@@ -6,5 +6,6 @@ import { CatsService } from './cats.service';
   imports: [],
   controllers: [CatsController],
   providers: [CatsService],
+  exports: [CatsService],
 })
 export class CatsModule {}
