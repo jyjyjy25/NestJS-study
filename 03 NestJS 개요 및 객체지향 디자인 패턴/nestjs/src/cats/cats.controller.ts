@@ -1,7 +1,6 @@
 import { CatsService } from './cats.service';
-import { HttpExceptionFilter } from 'src/http-exception.filter';
+import { HttpExceptionFilter } from '../common/exceptions/http-exception.filter';
 import {
-  HttpException,
   Controller,
   Get,
   Post,
@@ -11,9 +10,12 @@ import {
   UseFilters,
   Param,
   ParseIntPipe,
+  UseInterceptors,
 } from '@nestjs/common';
+import { SuccessInterceptor } from '../common/interceptors/success.intercept';
 
 @Controller('cats')
+@UseInterceptors(SuccessInterceptor)
 @UseFilters(HttpExceptionFilter) // 컨트롤러 범위
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
@@ -22,15 +24,13 @@ export class CatsController {
   @Get()
   @UseFilters(HttpExceptionFilter) // 메서드 범위
   getAllCat() {
-    throw new HttpException('api is broken', 401);
-    return 'all cat';
+    console.log('hello controller');
+    return { cats: 'get all cat api' };
   }
 
   // cats/:id
   @Get(':id')
   getOneCat(@Param('id', ParseIntPipe) param: number) {
-    console.log(param);
-    console.log(typeof param);
     return 'one cat';
   }
 
