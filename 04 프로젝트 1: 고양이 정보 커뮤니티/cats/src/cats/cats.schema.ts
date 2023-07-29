@@ -8,6 +8,8 @@ const options: SchemaOptions = {
 
 @Schema(options)
 export class Cat extends Document {
+  readonly readOnlyData: { id: string; email: string; name: string };
+
   @Prop({
     required: true,
     uniqie: true,
@@ -35,3 +37,11 @@ export class Cat extends Document {
 }
 
 export const CatSchema = SchemaFactory.createForClass(Cat);
+
+CatSchema.virtual('readOnlyData').get(function (this: Cat) {
+  return {
+    id: this.id,
+    email: this.email,
+    name: this.name,
+  };
+});
