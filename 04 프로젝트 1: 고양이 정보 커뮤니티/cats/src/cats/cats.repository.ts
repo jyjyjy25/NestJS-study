@@ -13,6 +13,11 @@ export class CatsRepository {
     return cat;
   }
 
+  async findCatByIdWithoutPassword(catId: string): Promise<Cat | null> {
+    const cat = await this.catModel.findById(catId).select('-password');
+    return cat;
+  }
+
   async existsByEmail(email: string): Promise<boolean> {
     const result = await this.catModel.exists({ email });
     if (result) return true;

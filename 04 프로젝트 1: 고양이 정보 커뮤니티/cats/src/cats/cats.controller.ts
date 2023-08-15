@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from './../auth/jwt/jwt.guard';
 import { LoginRequestDto } from './../auth/dto/login.requestdto';
 import { AuthService } from './../auth/auth.service';
 import { CatsService } from './cats.service';
@@ -14,11 +15,15 @@ import {
   Param,
   ParseIntPipe,
   UseInterceptors,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { SuccessInterceptor } from '../common/interceptors/success.intercept';
 import { CatRequestDto } from './dto/cats.requestdto';
 import { ReadOnlyCatDto } from './dto/cats.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Request } from 'express';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -30,9 +35,10 @@ export class CatsController {
   ) {}
 
   @ApiOperation({ summary: '현재 고양이 가져오기' })
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getCurrentCat() {
-    return 'current cat';
+  getCurrentCat(@CurrentUser() cat) {
+    return cat.readOnlyData;
   }
 
   @ApiResponse({
