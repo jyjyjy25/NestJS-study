@@ -1,3 +1,5 @@
+import { CatsRepository } from './cats/cats.repository';
+import { Cat } from './cats/cats.schema';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

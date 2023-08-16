@@ -1,29 +1,26 @@
-import { JwtAuthGuard } from './../auth/jwt/jwt.guard';
-import { LoginRequestDto } from './../auth/dto/login.requestdto';
-import { AuthService } from './../auth/auth.service';
-import { CatsService } from './cats.service';
-import { HttpExceptionFilter } from '../common/exceptions/http-exception.filter';
+import { Cat } from './../cats.schema';
+import { JwtAuthGuard } from './../../auth/jwt/jwt.guard';
+import { LoginRequestDto } from './../../auth/dto/login.requestdto';
+import { AuthService } from './../../auth/auth.service';
+import { CatsService } from '../services/cats.service';
+import { HttpExceptionFilter } from '../../common/exceptions/http-exception.filter';
 import {
   Controller,
   Get,
   Post,
-  Put,
-  Patch,
-  Delete,
   UseFilters,
   Body,
-  Param,
-  ParseIntPipe,
   UseInterceptors,
   UseGuards,
-  Req,
+  UploadedFile,
 } from '@nestjs/common';
-import { SuccessInterceptor } from '../common/interceptors/success.intercept';
-import { CatRequestDto } from './dto/cats.requestdto';
-import { ReadOnlyCatDto } from './dto/cats.dto';
+import { SuccessInterceptor } from '../../common/interceptors/success.intercept';
+import { CatRequestDto } from '../dto/cats.requestdto';
+import { ReadOnlyCatDto } from '../dto/cats.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Request } from 'express';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/common/utils/multer.options';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -69,8 +66,14 @@ export class CatsController {
   }
 
   @ApiOperation({ summary: '고양이 이미지 업로드' })
-  @Post('upload/cats')
-  uploadCatImg() {
-    return 'uploadImg';
+  @UseInterceptors(FileInterceptor('image', multerOptions('cats')))
+  @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  uploadCatImg(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() cat: Cat,
+  ) {
+    // return { image: `http://localhost:8000/media/cats/${file.filename}` };
+    return this.catsService.uploadImg(cat, file);
   }
 }
