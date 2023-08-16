@@ -31,6 +31,12 @@ export class CatsController {
     private readonly authService: AuthService,
   ) {}
 
+  @ApiOperation({ summary: '모든 고양이 가져오기' })
+  @Get('all')
+  getAllCats() {
+    return this.catsService.getAllCat();
+  }
+
   @ApiOperation({ summary: '현재 고양이 가져오기' })
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -73,7 +79,6 @@ export class CatsController {
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() cat: Cat,
   ) {
-    // return { image: `http://localhost:8000/media/cats/${file.filename}` };
     return this.catsService.uploadImg(cat, file);
   }
 }
